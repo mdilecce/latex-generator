@@ -1,0 +1,21 @@
+proj_name:  "Project Name"      # Replace with the name of your project
+
+item:
+  - jobname: Main1               # Label for the Job
+    compile: true               # Set to true to enable compilation, false otherwise
+    file: ./main1.tex            # Replace with the name of your main LaTeX document
+    latex_compiler:  LuaLatex   # Choose one of the following options: pdfLatex, XeLatex
+    draft: false                # Set to true for draft mode, false otherwise
+    out_dir: ./                 # Output Director
+    out_type: pdf               # Output type dvi or pdf
+    lua_script:                 # Lua script (only Lualatex compiler)
+    extra_args:                 # Extra argument for compiler
+  - jobname: Main2              # Label for the Job
+    compile: true               # Set to true to enable compilation, false otherwise
+    file: ./main2.tex            # Replace with the name of your main LaTeX document
+    latex_compiler:  LuaLatex   # Choose one of the following options: pdfLatex, XeLatex
+    draft: false                # Set to true for draft mode, false otherwise
+    out_dir: ./                 # Output Director
+    out_type: pdf               # Output type dvi or pdf
+    lua_script:                 # Lua script (only Lualatex compiler)
+    extra_args:                 # Extra argument for compiler
