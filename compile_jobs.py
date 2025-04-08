@@ -4,6 +4,9 @@ import yaml
 
 # Path to the YAML file
 yaml_file = "/home/argonauta/Projects/latex-generator/latex_jobs.yaml"
+error_warning_file = (
+    "/home/argonauta/Projects/latex-generator/compile_errors_warnings.log"
+)
 
 # Load the YAML file
 with open(yaml_file, "r") as file:
@@ -15,57 +18,78 @@ for job in config.get("item", []):
     file = job.get("file")
     compiler = job.get("latex_compiler", "pdflatex")
     draft = job.get("draft", False)
-    out_dir = job.get("out_dir", "./")
-    extra_args = job.get("extra_args", "")
+    out_dir = job.get("output_dir", "./")
+    output_format = job.get("output_format", "pdf")
+    extra_args = job.get("extra_args", "") if job.get("extra_args") else ""
     lua_script = job.get("lua_script", "")
-    jobname = job.get("jobname", "job")
+    jobname = job.get("jobname") if job.get("jobname") else ""
 
     if compile:
-        stdout_log = os.path.join(out_dir, f"{jobname}_stdout.log")
-        stderr_log = os.path.join(out_dir, f"{jobname}_stderr.log")
-
         print(f"Compiling {file} with {compiler}...")
-        with open(stdout_log, "a") as log:
-            log.write(f"Compiling {file} with {compiler}...\n")
         os.makedirs(out_dir, exist_ok=True)
 
         # Add draft mode if enabled
         if draft:
             extra_args += " --draftmode"
 
+        if jobname != "":
+            extra_args += f" --jobname='{jobname}'"
+
+        # Add output format argument
+        if output_format.lower() == "dvi":
+            extra_args += " --output-format='dvi'"
+        else:
+            extra_args += " --output-format='pdf'"
+
         # Add Lua script if LuaLatex is used
         if compiler.lower() == "lualatex" and lua_script:
             extra_args += f" --lua={lua_script}"
 
+        extra_args += f" --output-directory='{out_dir}'"
+
         # Compile the LaTeX file
-        command = (
-            f"{compiler} {extra_args} --output-directory={out_dir} {file}"
-        )
+        command = f"{compiler} {extra_args} '{file}'"
+        log_file = f"{out_dir}/{jobname}.log"
         try:
-            result = subprocess.run(
-                command, shell=True, capture_output=True, text=True
-            )
-            with open(stdout_log, "a") as log:
-                log.write(result.stdout)
-            with open(stderr_log, "a") as log:
-                log.write(result.stderr)
-            if result.returncode != 0:
+            with subprocess.Popen(
+                command,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            ) as process:
+                for line in process.stdout:
+                    print(line, end="")
+                for line in process.stderr:
+                    print(line, end="")
+                process.wait()
+
+            if process.returncode != 0:
                 print(
                     f"Error compiling {file}. Check the stderr log for details."
                 )
-                with open(stderr_log, "a") as log:
-                    log.write(f"Error compiling {file}.\n")
             else:
                 print(f"Compilation of {file} completed successfully.")
-                with open(stdout_log, "a") as log:
-                    log.write(
-                        f"Compilation of {file} completed successfully.\n"
-                    )
+
+            # Extract warnings and errors from the log file
+            warnings_errors = []
+            try:
+                with open(log_file, "r") as f:
+                    for line in f:
+                        if "Warning" in line or "Error"  or "Overfull"or "Underfull" in line:
+                            warnings_errors.append(line.strip())
+            except FileNotFoundError:
+                print(f"Log file {log_file} not found.")
+
+            # Write warnings and errors to the new file
+            if warnings_errors:
+                with open(error_warning_file, "a") as ew_file:
+                    ew_file.write(f"Job: {jobname}, File: {file}\n")
+                    for line in warnings_errors:
+                        ew_file.write(line + "\n")
+                    ew_file.write("\n")
+
         except Exception as e:
             print(f"Exception occurred: {e}")
-            with open(stderr_log, "a") as log:
-                log.write(f"Exception occurred: {e}\n")
     else:
         print(f"Skipping {file} (compile option is false).")
-        with open(stdout_log, "a") as log:
-            log.write(f"Skipping {file} (compile option is false).\n")
