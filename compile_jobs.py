@@ -3,10 +3,7 @@ import subprocess
 import yaml
 
 # Path to the YAML file
-yaml_file = "/home/argonauta/Projects/latex-generator/latex_jobs.yaml"
-error_warning_file = (
-    "/home/argonauta/Projects/latex-generator/compile_errors_warnings.log"
-)
+yaml_file = "./latex_jobs.yaml"
 
 # Load the YAML file
 with open(yaml_file, "r") as file:
@@ -14,19 +11,21 @@ with open(yaml_file, "r") as file:
 
 # Iterate over each job in the YAML file
 for job in config.get("item", []):
+    jobname = job.get("jobname") if job.get("jobname") else ""
     compile = job.get("compile", False)
     file = job.get("file")
     compiler = job.get("latex_compiler", "pdflatex")
     draft = job.get("draft", False)
     out_dir = job.get("output_dir", "./")
     output_format = job.get("output_format", "pdf")
-    extra_args = job.get("extra_args", "") if job.get("extra_args") else ""
     lua_script = job.get("lua_script", "")
-    jobname = job.get("jobname") if job.get("jobname") else ""
+    extra_args = job.get("extra_args", "") if job.get("extra_args") else ""
 
     if compile:
         print(f"Compiling {file} with {compiler}...")
         os.makedirs(out_dir, exist_ok=True)
+
+        extra_args += "-interaction=nonstopmode"
 
         # Add draft mode if enabled
         if draft:
@@ -71,12 +70,13 @@ for job in config.get("item", []):
             else:
                 print(f"Compilation of {file} completed successfully.")
 
+            error_warning_file = f"./{out_dir}/{jobname}_error.log"
             # Extract warnings and errors from the log file
             warnings_errors = []
             try:
                 with open(log_file, "r") as f:
                     for line in f:
-                        if "Warning" in line or "Error"  or "Overfull"or "Underfull" in line:
+                        if "Warning" in line or "Error" in line:
                             warnings_errors.append(line.strip())
             except FileNotFoundError:
                 print(f"Log file {log_file} not found.")
