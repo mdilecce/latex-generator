@@ -3,7 +3,7 @@ import subprocess
 import yaml
 
 # Path to the YAML file
-yaml_file = "./latex_jobs.yaml"
+yaml_file = "/app/latex_jobs.yaml"
 
 # Load the YAML file
 with open(yaml_file, "r") as file:
@@ -11,6 +11,7 @@ with open(yaml_file, "r") as file:
 
 # Iterate over each job in the YAML file
 for job in config.get("item", []):
+
     jobname = job.get("jobname") if job.get("jobname") else ""
     compile = job.get("compile", False)
     file = job.get("file")
@@ -25,7 +26,7 @@ for job in config.get("item", []):
         print(f"Compiling {file} with {compiler}...")
         os.makedirs(out_dir, exist_ok=True)
 
-        extra_args += "-interaction=nonstopmode"
+        extra_args += " -interaction=nonstopmode"
 
         # Add draft mode if enabled
         if draft:
@@ -48,7 +49,7 @@ for job in config.get("item", []):
 
         # Compile the LaTeX file
         command = f"{compiler} {extra_args} '{file}'"
-        log_file = f"{out_dir}/{jobname}.log"
+        log_file = f"/app/{out_dir}/{jobname}.log"
         try:
             with subprocess.Popen(
                 command,
@@ -70,7 +71,7 @@ for job in config.get("item", []):
             else:
                 print(f"Compilation of {file} completed successfully.")
 
-            error_warning_file = f"./{out_dir}/{jobname}_error.log"
+            error_warning_file = f"/app/{out_dir}/{jobname}_error.log"
             # Extract warnings and errors from the log file
             warnings_errors = []
             try:
