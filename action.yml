@@ -1,13 +1,9 @@
 name: "Latex - Generator"
 author: "Michele DI Lecce"
 description: "Generates and compile latex repository"
-on:
-  push:
-    branches:
-      - "**" # Trigger on all branches
 runs:
   using: "docker"
-  image: "mdilecce/latex-generator:v1" # Use the pre-built image
+  image: "Dockerfile" # Use the pre-built image
 branding:
   icon: "feather"
   color: "gray-dark"
