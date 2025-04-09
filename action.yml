@@ -9,8 +9,8 @@ runs:
   using: "docker"
   image: "mdilecce/latex-generator:v1" # Use the pre-built image
 branding:
-  icon: "git-branch"
-  color: "red"
+  icon: "feather"
+  color: "gray-dark"
 inputs:
   email:
     description: The commiter's email address
