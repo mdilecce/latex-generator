@@ -3,7 +3,7 @@ import subprocess
 import yaml
 
 # Path to the YAML file
-yaml_file = "/app/latex_jobs.yaml"
+yaml_file = "/github/workspace/latex_jobs.yaml"
 
 # Load the YAML file
 with open(yaml_file, "r") as file:
@@ -16,7 +16,7 @@ for job in config.get("item", []):
     file = job.get("file")
     compiler = job.get("latex_compiler", "pdflatex")
     draft = job.get("draft", False)
-    out_dir = job.get("output_dir", "/app/")
+    out_dir = job.get("output_dir", "/github/workspace/")
     output_format = job.get("output_format", "pdf")
     lua_script = job.get("lua_script", "")
     extra_args = job.get("extra_args", "") if job.get("extra_args") else ""
@@ -70,7 +70,7 @@ for job in config.get("item", []):
             else:
                 print(f"Compilation of {file} completed successfully.")
 
-            error_warning_file = f"/app/{out_dir}/{jobname}_error.log"
+            error_warning_file = f"/github/workspace/{out_dir}/{jobname}_error.log"
             # Extract warnings and errors from the log file
             warnings_errors = []
             try:
