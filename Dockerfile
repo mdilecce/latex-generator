@@ -16,4 +16,4 @@ COPY compile_jobs.py /usr/bin/
 USER texlive
 
 # Set the container to run the compile_jobs.sh script on startup
-CMD ["/bin/bash", "-c", "ls -al / && ls -al ~ && ls -al /workdir/ && ls -al /home/ && source /usr/bin/compile_jobs.sh"]
+CMD ["/bin/bash", "-c", "ls -al / && ls -al ~ && ls -al /workdir/ && ls -al /github/workspace/ && source /usr/bin/compile_jobs.sh"]
