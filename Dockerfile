@@ -6,7 +6,7 @@ USER root
 RUN apt-get update && apt-get install -y \
     python3 python3-pyyaml-env-tag git 
 
-WORKDIR /app
+WORKDIR  /github/workspace
 
 # Copy the required scripts into the container
 COPY compile_jobs.sh /usr/bin/
