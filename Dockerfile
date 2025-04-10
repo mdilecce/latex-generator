@@ -12,9 +12,9 @@ WORKDIR  /github/workspace
 COPY compile_jobs.sh /usr/bin/
 COPY compile_jobs.py /usr/bin/
 
-RUN chown -R texlive:texlive /github/workspace
-# Switch to limited user
-USER texlive
+# RUN chown -R texlive:texlive /github/workspace
+# # Switch to limited user
+# USER texlive
 
 # Set the container to run the compile_jobs.sh script on startup
 CMD ["/bin/bash", "-c", "ls -al / && ls -al /github/workspace/ && source /usr/bin/compile_jobs.sh"]
