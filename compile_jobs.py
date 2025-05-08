@@ -11,7 +11,7 @@ with open(yaml_file, "r") as file:
     config = yaml.safe_load(file)
 
 # Iterate over each job in the YAML file
-for job in config.get("item", []):
+for job in config.get("items", []):
     jobname = job.get("jobname") if job.get("jobname") else ""
     compile = job.get("compile", False)
     file = job.get("file")
